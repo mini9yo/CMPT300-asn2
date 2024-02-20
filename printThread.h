@@ -4,6 +4,9 @@
 // Print thread implementation
 void* printThread();
 
+// Print signaller
+void print_signal();
+
 // Initialize printThread
 void print_init();
 

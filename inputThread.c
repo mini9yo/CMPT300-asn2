@@ -1,4 +1,5 @@
 #include "inputThread.h"
+#include "sendThread.h"
 #include <pthread.h>
 #include <stdlib.h>
 
@@ -7,6 +8,9 @@ pthread_t threadInput;
 // Input thread implementation
 void* inputThread()
 {
+    // Signal send thread
+    send_signal();
+
     // TODO: Update
     return NULL;
 }

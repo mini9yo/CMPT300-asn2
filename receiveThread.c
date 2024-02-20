@@ -1,4 +1,5 @@
 #include "receiveThread.h"
+#include "printThread.h"
 #include <pthread.h>
 #include <stdlib.h>
 
@@ -8,6 +9,10 @@ pthread_t threadReceive;
 void* receiveThread()
 {
     // TODO: Update
+
+    // Signal print thread
+    print_signal();
+    
     return NULL;
 }
 
