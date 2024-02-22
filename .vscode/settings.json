@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "printthread.h": "c",
+        "sockets.h": "c"
+    }
+}

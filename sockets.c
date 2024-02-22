@@ -16,11 +16,11 @@
     // Create the socket for UDP
     int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
     if (socketDescriptor < 0) {
-        error("Error socketDescriptor initialization");
+        perror("Error socketDescriptor initialization");
         exit(EXIT_FAILURE);
     }
 
-    // Bind the socket to the port (PORT) that we specify
+    // Bind the socket to the port
     if (!bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin))) {
         perror("Error bind");
         exit(EXIT_FAILURE);

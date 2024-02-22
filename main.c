@@ -24,11 +24,13 @@ int main(int argc, char** args)
     // Cleanup pthreads
     input_waitForShutdown();
     send_waitForShutdown();
-    receive_waitForShutdown();
-    print_waitForShutdown();
+    receive_shutdown();
+    print_shutdown();
 
     // Close socket
     closeSocket(socketDescriptor);
+
+    // TODO: Free list
 
     return 0;
 }
