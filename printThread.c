@@ -32,9 +32,12 @@ void* printThread(void* listRx)
         }
 
         // Print then free message
-        puts(msg);
-        free(msg);
-        msg = NULL;
+        if (msg != NULL) {
+            puts(msg);
+            free(msg);
+            msg = NULL;
+        }
+        
     }
 
     return NULL;

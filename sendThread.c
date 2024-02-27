@@ -16,17 +16,24 @@ static int sendShutdown = 0;
 static int socketDescriptor = -1;
 static int PORT = -1;
 
+typedef struct params {
+    List* list;
+    int socket;
+    char* machine;
+    int port;
+} threadParams;
+
 // Send thread implementation
-void* sendThread()
+void* sendThread(void* threadArgs)
 {
+    // Initialize argument variables
+    threadParams* args = (threadParams*)threadArgs;
+    sendList = args->list;
+    PORT = args->port;
+
     // socket
     if (PORT == -1) {
         perror("Error PORT initialization");
-        exit(EXIT_FAILURE);
-    }
-    socketDescriptor = createSocket(PORT);
-    if (socketDescriptor < 0) {
-        perror("Error socketDescriptor initialization");
         exit(EXIT_FAILURE);
     }
 
@@ -70,11 +77,10 @@ void send_signal()
 }
 
 // Initialize sendThread
-void send_init(List* list, int port)
+void send_init(List* list, int socketDescriptor, char* machine, int port)
 {
-    sendList = list;
-    PORT = port;
-    if (pthread_create(&threadSend, NULL, sendThread, NULL) != 0) {
+    threadParams threadArgs = {list, socketDescriptor, machine, port};
+    if (pthread_create(&threadSend, NULL, sendThread, (void*) &threadArgs) != 0) {
         perror("Error threadSend creation");
         exit(EXIT_FAILURE);
     }
