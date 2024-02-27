@@ -4,6 +4,9 @@
 // Send thread implementation
 void* sendThread();
 
+// Send signaller
+void send_signal();
+
 // Initialize sendThread
 void send_init();
 

@@ -1,4 +1,5 @@
 #include "inputThread.h"
+#include "sendThread.h"
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,6 +16,9 @@ static int inputShutdown = 0;
 // Input thread implementation
 void* inputThread()
 {
+    // Signal send thread
+    send_signal();
+
     // TODO: Update
     while (1) {
         char inputBuffer[1024];

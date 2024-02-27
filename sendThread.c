@@ -16,7 +16,6 @@ static int sendShutdown = 0;
 static int socketDescriptor = -1;
 static int PORT = -1;
 
-
 // Send thread implementation
 void* sendThread()
 {
@@ -58,6 +57,16 @@ void* sendThread()
         free(message);
     }
     return NULL;
+}
+
+// Send signaller
+void send_signal()
+{
+    pthread_mutex_lock(&s_sendMutex);
+    {
+        pthread_cond_signal(&s_sendCond);
+    }
+    pthread_mutex_unlock(&s_sendMutex);
 }
 
 // Initialize sendThread
