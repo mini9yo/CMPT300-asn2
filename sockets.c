@@ -22,7 +22,7 @@
         exit(EXIT_FAILURE);
     }
 
-    // Bind the socket to the port (PORT) that we specify
+    // Bind the socket to the port
     if (!bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin))) {
         perror("Error bind");
         exit(EXIT_FAILURE);

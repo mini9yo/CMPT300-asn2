@@ -19,18 +19,26 @@ int main(int argc, char *argv[]) {
     char *remoteMachine = argv[2];
     int remotePort = atoi(argv[3]);
 
+<<<<<<< HEAD
     // Establish socket connection
     int socketDescriptor = createSocket(localPort);
     if (socketDescriptor < 0) {
         fprintf(stderr, "Error creating socket\n");
         exit(EXIT_FAILURE);
     }
+=======
+    // Create socket
+    int socketDescriptor = createSocket(localPort);
+>>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 
     // Initialize the list data structure for message passing
     List *messageListReceive = List_create();
     if (messageListReceive == NULL) {
         fprintf(stderr, "Error creating message list\n");
+<<<<<<< HEAD
         closeSocket(socketDescriptor); // Close the socket
+=======
+>>>>>>> 2be837e128123a1064baf993d96530fd4b241258
         exit(EXIT_FAILURE);
     }
   
@@ -55,9 +63,17 @@ int main(int argc, char *argv[]) {
     send_waitForShutdown();
 
     // Clean up resources
+<<<<<<< HEAD
     List_free(messageListSend, free);
     List_free(messageListReceive, free);
+=======
+    List_free(messageListReceive, free);
+    List_free(messageListSend, free);
+
+    // Close socket
+>>>>>>> 2be837e128123a1064baf993d96530fd4b241258
     closeSocket(socketDescriptor);
 
     return EXIT_SUCCESS;
 }
+
