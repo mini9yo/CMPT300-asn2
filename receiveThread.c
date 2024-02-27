@@ -1,17 +1,11 @@
 #include "receiveThread.h"
 #include "printThread.h"
 #include "list.h"
-<<<<<<< HEAD
 #include <string.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <netdb.h>
 #include <stdio.h>
-=======
-#include <pthread.h>
-#include <stdlib.h>
-#include <netdb.h>
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 #include "listOps.h"
 
 #define BUFFER_MAX_LEN 256
@@ -31,11 +25,7 @@ void* receiveThread(void* threadArgs)
     // Initialize argument variables
     threadParams* args = (threadParams*)threadArgs;
     List* listRx = args->list;
-<<<<<<< HEAD
     int socketDescriptor = args->socket;
-=======
-    int socketDescriptor = (threadParams*)args->socket;
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 
     // Initialize (other) variables
     char msgRx[BUFFER_MAX_LEN];
@@ -57,17 +47,9 @@ void* receiveThread(void* threadArgs)
             perror("Error memory allocation for inbound message list item");
             exit(EXIT_FAILURE);
         }
-<<<<<<< HEAD
         strncpy(s_msgRx_allocated, msgRx, msgRx_len);
         s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
 
-=======
-
-        strncpy(s_msgRx_allocated, msgRx, msgRx_len);
-        s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
-
-        // Add message to the list
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
         if (listAdd(listRx, s_msgRx_allocated) == -1) {
             perror("Error adding item to inbound message list");
             exit(EXIT_FAILURE);
@@ -97,7 +79,7 @@ void receive_init(List* listRx, int socketDescriptor)
 }
 
 // Shutdown receiveThread
-void receive_shutdown()
+void receive_waitForShutdown()
 {
     pthread_cancel(threadReceive);
     pthread_join(threadReceive, NULL);

@@ -17,33 +17,9 @@ static int sendShutdown = 0;
 static int socketDescriptor = -1;
 static int PORT = -1;
 
-<<<<<<< HEAD
-=======
-typedef struct params {
-    List* list;
-    int socket;
-    char* machine;
-    int port;
-} threadParams;
-
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 // Send thread implementation
-void* sendThread(void* threadArgs)
+void* sendThread()
 {
-<<<<<<< HEAD
-=======
-    // Initialize argument variables
-    threadParams* args = (threadParams*)threadArgs;
-    sendList = args->list;
-    PORT = args->port;
-
-    // socket
-    if (PORT == -1) {
-        perror("Error PORT initialization");
-        exit(EXIT_FAILURE);
-    }
-
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
     while(1) {
         pthread_mutex_lock(&s_sendMutex);
         while (List_count(sendList) == 0 && !sendShutdown) {
@@ -55,11 +31,7 @@ void* sendThread(void* threadArgs)
         }
         // retrieve message from list
         char* message = listRemove(sendList);
-<<<<<<< HEAD
         pthread_mutex_unlock(&s_sendMutex);
-=======
-        pthread_mutex_unlock(&sendMutex);
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 
         // send message
         struct sockaddr_in sin;
@@ -77,25 +49,12 @@ void* sendThread(void* threadArgs)
     return NULL;
 }
 
-// Send signaller
-void send_signal()
-{
-    pthread_mutex_lock(&s_sendMutex);
-    {
-        pthread_cond_signal(&s_sendCond);
-    }
-    pthread_mutex_unlock(&s_sendMutex);
-}
-
 // Initialize sendThread
-<<<<<<< HEAD
 void send_init(List* list, int port, int remotePort)
-=======
-void send_init(List* list, int socketDescriptor, char* machine, int port)
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 {
-    threadParams threadArgs = {list, socketDescriptor, machine, port};
-    if (pthread_create(&threadSend, NULL, sendThread, (void*) &threadArgs) != 0) {
+    sendList = list;
+    PORT = port;
+    if (pthread_create(&threadSend, NULL, sendThread, NULL) != 0) {
         perror("Error threadSend creation");
         exit(EXIT_FAILURE);
     }
