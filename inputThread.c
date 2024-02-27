@@ -4,7 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <netdb.h>
 #include "list.h"
+#include "listOps.h"
+
+#define BUFFER_MAX_LEN 256
 
 static pthread_t threadInput;
 static List* inputList;
@@ -17,11 +21,11 @@ void* inputThread()
 {
     // TODO: Update
     while (1) {
-        char inputBuffer[1024];
+        char inputBuffer[BUFFER_MAX_LEN];
         fgets(inputBuffer, sizeof(inputBuffer), stdin);
 
         pthread_mutex_lock(&inputMutex);
-        if (List_add(inputList, strdup(inputBuffer)) != 0) {
+        if (listAdd(inputList, strdup(inputBuffer)) != 0) {
             perror("List add failed\n");
             exit(EXIT_FAILURE);
         }

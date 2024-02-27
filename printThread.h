@@ -10,4 +10,6 @@ void print_init();
 // Shutdown printThread
 void print_waitForShutdown();
 
+void print_signal();
+
 #endif

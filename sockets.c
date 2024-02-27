@@ -3,6 +3,8 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include "sockets.h"
+#include <string.h>
+#include <unistd.h>
 
  int createSocket(int PORT)
  {
@@ -16,7 +18,7 @@
     // Create the socket for UDP
     int socketDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
     if (socketDescriptor < 0) {
-        error("Error socketDescriptor initialization");
+        perror("Error socketDescriptor initialization");
         exit(EXIT_FAILURE);
     }
 
@@ -24,7 +26,7 @@
     if (!bind (socketDescriptor, (struct sockaddr*) &sin, sizeof(sin))) {
         perror("Error bind");
         exit(EXIT_FAILURE);
-    }
+    } 
 
     return socketDescriptor;
  }

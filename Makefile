@@ -1,15 +1,26 @@
-CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
+CC = gcc
+CFLAGS = -Wall -Wextra -g -pthread
+LDFLAGS = -pthread
 
-all: build
+SRCS = main.c sockets.c list.c
+OBJS = $(SRCS:.c=.o)
+DEPS = $(SRCS:.c=.d)
+TARGET = s-talk
 
-build:
-	gcc $(CFLAGS) list.c inputThread.c UDPThread.c printThread.c sendThread.c socket.c -o main -lpthread
+.PHONY: all clean
 
-run: build
-	./main
+all: $(TARGET)
 
-valgrind: build
-	valgrind --lead-check=full ./main
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.d: %.c
+	$(CC) -MM $(CFLAGS) $< > $@
+
+-include $(DEPS)
 
 clean:
-	rm -f main
+	$(RM) $(TARGET) $(OBJS) $(DEPS)

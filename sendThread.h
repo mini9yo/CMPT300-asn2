@@ -5,7 +5,7 @@
 void* sendThread();
 
 // Initialize sendThread
-void send_init();
+void send_init(List* list, int port, int remotePort);
 
 // Shutdown sendThread
 void send_waitForShutdown();
