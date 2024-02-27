@@ -1,5 +1,4 @@
 #include "inputThread.h"
-#include "sendThread.h"
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,11 +7,8 @@
 #include <netdb.h>
 #include "list.h"
 #include "listOps.h"
-<<<<<<< HEAD
 
 #define BUFFER_MAX_LEN 256
-=======
->>>>>>> 2be837e128123a1064baf993d96530fd4b241258
 
 static pthread_t threadInput;
 static List* inputList;
@@ -23,9 +19,6 @@ static int inputShutdown = 0;
 // Input thread implementation
 void* inputThread()
 {
-    // Signal send thread
-    send_signal();
-
     // TODO: Update
     while (1) {
         char inputBuffer[BUFFER_MAX_LEN];
