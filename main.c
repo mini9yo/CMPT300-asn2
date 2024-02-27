@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     input_init(messageListSend);
     receive_init(messageListReceive, socketDescriptor);
     print_init(messageListReceive);
-    send_init(messageListSend, remoteMachine, remotePort);
+    send_init(messageListSend, socketDescriptor, remoteMachine, remotePort);
 
     // Wait for threads to finish
     input_waitForShutdown();
