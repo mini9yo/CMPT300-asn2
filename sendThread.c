@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "list.h"
+#include "listOps.h"
 
 static pthread_t threadSend;
 static List* sendList;
@@ -47,7 +48,7 @@ void* sendThread(void* threadArgs)
             break;
         }
         // retrieve message from list
-        char* message = List_trim(sendList);
+        char* message = listRemove(sendList);
         pthread_mutex_unlock(&sendMutex);
 
         // send message

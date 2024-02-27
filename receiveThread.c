@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <netdb.h>
+#include "listOps.h"
 
 #define BUFFER_MAX_LEN 256
 
@@ -19,7 +20,7 @@ typedef struct params {
 // Receive thread implementation
 void* receiveThread(void* threadArgs)
 {
-    // Intialize argument variables
+    // Initialize argument variables
     threadParams* args = (threadParams*)threadArgs;
     List* listRx = args->list;
     int socketDescriptor = (threadParams*)args->socket;
@@ -38,17 +39,19 @@ void* receiveThread(void* threadArgs)
             (struct sockaddr *) &sinRemote, &sin_len);
 
         // Create message item and copy over message
+        // Allocate memory size of message length + 1 for the null terminator
         s_msgRx_allocated = (char*) malloc((1 + msgRx_len) * sizeof(char));
         if (s_msgRx_allocated == NULL) {
-            perror("Error message memory allocation failed");
+            perror("Error memory allocation for inbound message list item");
             exit(EXIT_FAILURE);
         }
+
         strncpy(s_msgRx_allocated, msgRx, msgRx_len);
-        s_msgRx_allocated[msgRx_len] = '\0';
+        s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
 
         // Add message to the list
-        if (List_prepend(listRx, s_msgRx_allocated) == -1) {
-            perror("Prepending message to list failed (list full)");
+        if (listAdd(listRx, s_msgRx_allocated) == -1) {
+            perror("Error adding item to inbound message list");
             exit(EXIT_FAILURE);
         }
 
