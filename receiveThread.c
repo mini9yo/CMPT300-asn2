@@ -56,7 +56,7 @@ void* receiveThread(void* threadArgs)
         print_signal();
 
         // Check for exit code ('!')
-        if ((msgRx_len == 1) && (msgRx[0] == "!")) {
+        if ((msgRx_len == 1) && (msgRx[0] == '!')) {
             printf("Exit code detected. S-talk session terminated.");
             break;
         }

@@ -27,7 +27,7 @@ void* printThread(void* listRx)
         msg = List_trim(listRx);
 
         // Check for exit code ('!')
-        if ((strlen(msg) == 1) && (msg[0] == "!")) {
+        if ((strlen(msg) == 1) && (msg[0] == '!')) {
             break;
         }
 

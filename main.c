@@ -81,7 +81,8 @@ int main(int argc, char *argv[]) {
     send_waitForShutdown();
 
     // Clean up resources
-    List_free(messageList, free);
+    List_free(messageListReceive, free);
+     List_free(messageListSend, free);
 
     return EXIT_SUCCESS;
 }
