@@ -20,7 +20,6 @@ void* inputThread()
     // Initialize variables
     char inputBuffer[BUFFER_MAX_LEN];
     char* msg;
-    int msgSize;
 
     while (1) {
         // Reset buffer
@@ -50,7 +49,7 @@ void* inputThread()
 
         // Check for exit code ('!')
         if (strcmp("!\0", msg) == 0) {
-            inputShutdown = 1;
+            printf("Exit code detected. S-talk session terminated.");
             break;
         }
     }
