@@ -36,6 +36,7 @@ void* sendThread(void* threadArgs)
         perror("Error PORT initialization");
         exit(EXIT_FAILURE);
     }
+    
     while(1) {
         pthread_mutex_lock(&s_sendMutex);
         while (List_count(sendList) == 0 && !sendShutdown) {
@@ -47,17 +48,25 @@ void* sendThread(void* threadArgs)
         }
         // retrieve message from list
         char* message = listRemove(sendList);
-        pthread_mutex_unlock(&s_sendMutex);
+
         // send message
         struct sockaddr_in sin;
         memset(&sin, 0, sizeof(sin));
         sin.sin_family = AF_INET;
-        sin.sin_addr.s_addr = htonl(INADDR_ANY);
+        memcpy(&sin.sin_addr, gethostbyname(args->machine)->h_addr_list[0], sizeof(sin.sin_addr));
         sin.sin_port = htons(PORT);
+        
         if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
             perror("Error sending message");
             exit(EXIT_FAILURE);
         }
+        
+       if(strcmp("!\n", message) == 0) {
+            free(message);
+            sendShutdown = 1;
+        }
+        pthread_mutex_unlock(&s_sendMutex);
+
         free(message);
     }
     return NULL;
