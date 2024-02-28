@@ -10,6 +10,6 @@ void* receiveThread(void* threadArgs);
 void receive_init(List* listRx, int socketDescriptor);
 
 // Shutdown receiveThread
-void receive_shutdown();
+void receive_waitForShutdown();
 
 #endif
