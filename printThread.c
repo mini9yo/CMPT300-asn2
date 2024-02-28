@@ -68,7 +68,7 @@ void print_init(List* listRx)
 }
 
 // Shutdown printThread
-void print_waitForShutdown()
+void print_shutdown()
 {
     pthread_cancel(threadPrint);
     pthread_join(threadPrint, NULL);

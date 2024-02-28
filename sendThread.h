@@ -11,6 +11,6 @@ void* sendThread(void* threadArgs);
 void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine, int remotePort);
 
 // Shutdown sendThread
-void send_waitForShutdown();
+void send_shutdown();
 
 #endif

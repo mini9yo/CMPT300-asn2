@@ -10,6 +10,6 @@ void* inputThread();
 void input_init(List* list);
 
 // Shutdown inputThread
-void input_waitForShutdown();
+void input_shutdown();
 
 #endif

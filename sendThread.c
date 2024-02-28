@@ -84,7 +84,8 @@ void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine
 }
 
 // Shutdown sendThread
-void send_waitForShutdown()
+void send_shutdown()
 {
+    pthread_cancel(threadSend);
     pthread_join(threadSend, NULL);
 }

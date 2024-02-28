@@ -52,7 +52,8 @@ void input_init(List* list)
 }
 
 // Shutdown inputThread
-void input_waitForShutdown()
+void input_shutdown()
 {
+    pthread_cancel(threadInput);
     pthread_join(threadInput, NULL);
 }

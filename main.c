@@ -49,10 +49,10 @@ int main(int argc, char *argv[]) {
     send_init(messageListSend, socketDescriptor, remoteMachine, remotePort);
 
     // Wait for threads to finish
-    input_waitForShutdown();
-    receive_waitForShutdown();
-    print_waitForShutdown();
-    send_waitForShutdown();
+    input_shutdown();
+    receive_shutdown();
+    print_shutdown();
+    send_shutdown();
 
     // Clean up resources
     List_free(messageListSend, free);
