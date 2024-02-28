@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <netdb.h>
 #include "list.h"
-#include "listOps.h"
 
 #define BUFFER_MAX_LEN 256
 
@@ -25,7 +24,7 @@ void* inputThread()
         fgets(inputBuffer, sizeof(inputBuffer), stdin);
 
         pthread_mutex_lock(&inputMutex);
-        if (listAdd(inputList, strdup(inputBuffer)) != 0) {
+        if (List_prepend(inputList, strdup(inputBuffer)) != 0) {
             perror("List add failed\n");
             exit(EXIT_FAILURE);
         }

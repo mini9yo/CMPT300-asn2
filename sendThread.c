@@ -7,7 +7,6 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "list.h"
-#include "listOps.h"
 
 static pthread_t threadSend;
 static List* sendList;
