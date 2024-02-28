@@ -27,15 +27,21 @@ void* printThread(void* listRx)
         // Remove message from list
         msg = listRemove(listRx);
 
+        if (msg == NULL) {
+            perror("Error: Attempted to remove item from empty list");
+            exit(EXIT_FAILURE);
+        } else { // Print message
+            puts(msg);
+            fflush(stdout); // flush to immediately display msg
+            free(msg);
+            msg = NULL;
+        }
+
         // Check for exit code ('!')
         if ((strlen(msg) == 1) && (*msg == '!')) {
             break;
         }
-
-        // Print then free message
-        puts(msg);
-        free(msg);
-        msg = NULL;
+        
     }
 
     return NULL;

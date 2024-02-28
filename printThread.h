@@ -13,6 +13,4 @@ void print_init(List* listRx);
 // Shutdown printThread
 void print_shutdown();
 
-void print_signal();
-
 #endif
