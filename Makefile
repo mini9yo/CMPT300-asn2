@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g -pthread
 LDFLAGS = -pthread
 
-SRCS = main.c sockets.c list.c receiveThread.c printThread.c sendThread.c inputThread.c
+SRCS = main.c sockets.c list.c receiveThread.c printThread.c sendThread.c inputThread.c listOps.c
 OBJS = $(SRCS:.c=.o)
 DEPS = $(SRCS:.c=.d)
 TARGET = s-talk
