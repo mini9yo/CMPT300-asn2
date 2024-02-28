@@ -8,9 +8,9 @@
 #include <netdb.h>
 #include "list.h"
 
+
 static pthread_t threadSend;
 static List* sendList;
-static pthread_mutex_t s_sendMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t s_sendCond = PTHREAD_COND_INITIALIZER;
 static int sendShutdown = 0;
 static int socketDescriptor = -1;
@@ -86,6 +86,5 @@ void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine
 // Shutdown sendThread
 void send_shutdown()
 {
-    pthread_cancel(threadSend);
     pthread_join(threadSend, NULL);
 }
