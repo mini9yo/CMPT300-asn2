@@ -62,12 +62,10 @@ void* sendThread(void* threadArgs)
         }
         
        if(strcmp("!\n", message) == 0) {
-            free(message);
             sendShutdown = 1;
         }
         pthread_mutex_unlock(&s_sendMutex);
 
-        free(message);
     }
     return NULL;
 }
