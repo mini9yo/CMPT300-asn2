@@ -21,11 +21,11 @@ void* printThread(void* threadArg)
         pthread_mutex_lock(&s_printMutex);
         {
             pthread_cond_wait(&s_printCond, &s_printMutex);
+            
+            // Remove message from list
+            msg = List_trim(listRx);
         }
         pthread_mutex_unlock(&s_printMutex);
-
-        // Remove message from list
-        msg = List_trim(listRx);
 
         // Handle msg
         if (msg == NULL) {
