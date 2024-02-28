@@ -11,6 +11,6 @@ void print_signal();
 void print_init(List* listRx);
 
 // Shutdown printThread
-void print_shutdown();
+void print_waitForShutdown();
 
 #endif
