@@ -36,6 +36,7 @@ void* inputThread()
         pthread_mutex_unlock(&inputMutex);
 
         if (strcmp("!\n", inputBuffer) == 0) {
+            free(inputBuffer);
             inputShutdown = 1;
             break;
         }
@@ -43,6 +44,7 @@ void* inputThread()
 
     return NULL;
 }
+
 
 // Initialize inputThread
 void input_init(List* list)
