@@ -12,31 +12,44 @@
 
 static pthread_t threadInput;
 static List* inputList;
-static pthread_mutex_t inputMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t inputCond = PTHREAD_COND_INITIALIZER;
 static int inputShutdown = 0;
 
 // Input thread implementation
 void* inputThread()
 {
-    // TODO: Update
+    // Initialize variables
+    char inputBuffer[BUFFER_MAX_LEN];
+    char* msg;
+    int msgSize;
 
     while (1) {
-        char* inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
+        // Reset buffer
+        memset(&inputBuffer, 0, BUFFER_MAX_LEN);
+        
+        // Read input into buffer
         fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
+        
+        // Replace newline char with null terminator if present
+        inputBuffer[strcspn(inputBuffer, "\n")] = '\0';
 
-        pthread_mutex_lock(&inputMutex);
-        if (List_prepend(inputList, strdup(inputBuffer)) != 0) {
+        // Copy message into allocated memory
+        msg = strdup(inputBuffer);
+        if (msg == NULL) {
+            perror("Error memory allocation for outbound message list item");
+            exit(EXIT_FAILURE);
+        }
+
+        // Add message item to list
+        if (listAdd(inputList, msg) != 0) {
             perror("List add failed\n");
             exit(EXIT_FAILURE);
         }
 
-        pthread_mutex_lock(&inputMutex);
+        // Signal print thread
         send_signal();
-        pthread_mutex_unlock(&inputMutex);
 
-        if (strcmp("!\n", inputBuffer) == 0) {
-            free(inputBuffer);
+        // Check for exit code ('!')
+        if (strcmp("!\0", msg) == 0) {
             inputShutdown = 1;
             break;
         }

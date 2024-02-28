@@ -12,7 +12,6 @@
 
 // Initialize variables
 static pthread_t threadReceive;
-static char* s_msgRx_allocated;
 
 typedef struct params {
     List* list;
@@ -29,6 +28,7 @@ void* receiveThread(void* threadArgs)
 
     // Initialize (other) variables
     char msgRx[BUFFER_MAX_LEN];
+    char* s_msgRx_allocated;
     int msgRx_len;
     
     while (1) {

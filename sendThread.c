@@ -39,13 +39,11 @@ void* sendThread(void* threadArgs)
     
     while(1) {
         pthread_mutex_lock(&s_sendMutex);
-        while (List_count(sendList) == 0 && !sendShutdown) {
+        {
             pthread_cond_wait(&s_sendCond, &s_sendMutex);
         }
-        if (sendShutdown) {
-            pthread_mutex_unlock(&s_sendMutex);
-            break;
-        }
+        pthread_mutex_unlock(&s_sendMutex);
+
         // retrieve message from list
         char* message = listRemove(sendList);
 
@@ -61,11 +59,10 @@ void* sendThread(void* threadArgs)
             exit(EXIT_FAILURE);
         }
         
-       if(strcmp("!\n", message) == 0) {
-            sendShutdown = 1;
+        if(strcmp("!\n", message) == 0) {
+            printf("Exit code detected. S-talk session terminated.");
+            break;
         }
-        pthread_mutex_unlock(&s_sendMutex);
-
     }
     return NULL;
 }
