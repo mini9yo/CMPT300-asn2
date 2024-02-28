@@ -40,16 +40,12 @@ void* receiveThread(void* threadArgs)
             msgRx, BUFFER_MAX_LEN, 0,
             (struct sockaddr *) &sinRemote, &sin_len);
 
-        // Allocate memory for new message item
-        s_msgRx_allocated = (char*) malloc((1 + msgRx_len) * sizeof(char));
+        // Copy message into allocated memory
+        s_msgRx_allocated = strdup(msgRx);
         if (s_msgRx_allocated == NULL) {
-            perror("Error memory allocation for inbound message list item");
+            perror("Error memory allocation for outbound message list item");
             exit(EXIT_FAILURE);
         }
-
-        // Copy contents of message
-        strncpy(s_msgRx_allocated, msgRx, msgRx_len);
-        s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
 
         // Add message item to list
         if (listAdd(listRx, s_msgRx_allocated) == -1) {
