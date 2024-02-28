@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <stdio.h>
+#include "listOps.h"
 
 #define BUFFER_MAX_LEN 256
 
@@ -51,7 +52,7 @@ void* receiveThread(void* threadArgs)
         s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
 
         // Add message item to list
-        if (List_prepend(listRx, s_msgRx_allocated) == -1) {
+        if (listAdd(listRx, s_msgRx_allocated) == -1) {
             perror("Error adding item to inbound message list");
             exit(EXIT_FAILURE);
         }

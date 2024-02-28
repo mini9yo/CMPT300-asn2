@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "listOps.h"
 
 // Initialize variables
 static pthread_t threadPrint;
@@ -21,11 +22,11 @@ void* printThread(void* threadArg)
         pthread_mutex_lock(&s_printMutex);
         {
             pthread_cond_wait(&s_printCond, &s_printMutex);
-            
-            // Remove message from list
-            msg = List_trim(listRx);
         }
         pthread_mutex_unlock(&s_printMutex);
+
+        // Remove message from list
+        msg = listRemove(listRx);
 
         // Handle msg
         if (msg == NULL) {
