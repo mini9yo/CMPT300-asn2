@@ -20,19 +20,22 @@ static int inputShutdown = 0;
 void* inputThread()
 {
     // TODO: Update
+
     while (1) {
-        char inputBuffer[BUFFER_MAX_LEN];
-        fgets(inputBuffer, sizeof(inputBuffer), stdin);
+        char* inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
+        fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
 
         pthread_mutex_lock(&inputMutex);
-        if (listAdd(inputList, strdup(inputBuffer)) != 0) {
+        if (List_prepend(inputList, strdup(inputBuffer)) != 0) {
             perror("List add failed\n");
             exit(EXIT_FAILURE);
         }
-        pthread_cond_signal(&inputCond);
+
+        pthread_mutex_lock(&inputMutex);
+        send_signal();
         pthread_mutex_unlock(&inputMutex);
 
-        if (strcmp(inputBuffer, "!\n") == 0) {
+        if (strcmp("!\n", inputBuffer) == 0) {
             inputShutdown = 1;
             break;
         }
