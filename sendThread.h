@@ -2,6 +2,8 @@
 #define _SEND_H
 
 #include "list.h"
+#include <pthread.h>
+
 static pthread_mutex_t s_sendMutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Send thread implementation
