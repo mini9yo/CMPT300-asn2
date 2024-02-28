@@ -23,6 +23,7 @@ typedef struct params {
     int port;
 } threadParams;
 
+
 // Send thread implementation
 void* sendThread(void* threadArgs)
 {
@@ -36,7 +37,7 @@ void* sendThread(void* threadArgs)
         perror("Error PORT initialization");
         exit(EXIT_FAILURE);
     }
-    
+
     while(1) {
         pthread_mutex_lock(&s_sendMutex);
         while (List_count(sendList) == 0 && !sendShutdown) {
@@ -47,21 +48,25 @@ void* sendThread(void* threadArgs)
             break;
         }
         // retrieve message from list
-        char* message = listRemove(sendList);
+        char* message = List_trim(sendList);
 
         // send message
         struct sockaddr_in sin;
         memset(&sin, 0, sizeof(sin));
         sin.sin_family = AF_INET;
-        memcpy(&sin.sin_addr, gethostbyname(args->machine)->h_addr_list[0], sizeof(sin.sin_addr));
+        memcpy(&sin.sin_addr, args->machine, sizeof(sin.sin_addr));
         sin.sin_port = htons(PORT);
         
-        if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
-            perror("Error sending message");
-            exit(EXIT_FAILURE);
+        if (message != NULL) {
+            if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
+                perror("Error sending message");
+                exit(EXIT_FAILURE);
+            } 
+        }else{
+            printf("Error: Attempted to remove item from empty list\n");
         }
-        
-       if(strcmp("!\n", message) == 0) {
+
+        if(strcmp("!\n", message) == 0) {
             sendShutdown = 1;
         }
         pthread_mutex_unlock(&s_sendMutex);
