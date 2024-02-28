@@ -1,12 +1,13 @@
 #include "inputThread.h"
+#include "sendThread.h"
+#include "list.h"
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <netdb.h>
-#include "list.h"
-#include "listOps.h"
+
 
 #define BUFFER_MAX_LEN 256
 
@@ -20,19 +21,22 @@ static int inputShutdown = 0;
 void* inputThread()
 {
     // TODO: Update
-    while (1) {
-        char inputBuffer[BUFFER_MAX_LEN];
-        fgets(inputBuffer, sizeof(inputBuffer), stdin);
 
-        pthread_mutex_lock(&inputMutex);
-        if (listAdd(inputList, strdup(inputBuffer)) != 0) {
+    while (1) {
+        char* inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
+        fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
+
+        if (List_prepend(inputList, strdup(inputBuffer)) != 0) {
             perror("List add failed\n");
             exit(EXIT_FAILURE);
         }
-        pthread_cond_signal(&inputCond);
-        pthread_mutex_unlock(&inputMutex);
 
-        if (strcmp(inputBuffer, "!\n") == 0) {
+        if(List_count(inputList) == 1) {
+            send_signal();
+        }  
+
+        if (strcmp("!\n", inputBuffer) == 0) {
+            free(inputBuffer);
             inputShutdown = 1;
             break;
         }
@@ -40,6 +44,7 @@ void* inputThread()
 
     return NULL;
 }
+
 
 // Initialize inputThread
 void input_init(List* list)
@@ -53,7 +58,7 @@ void input_init(List* list)
 }
 
 // Shutdown inputThread
-void input_waitForShutdown()
+void input_shutdown()
 {
     pthread_join(threadInput, NULL);
 }

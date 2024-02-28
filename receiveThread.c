@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <netdb.h>
 #include <stdio.h>
-#include "listOps.h"
 
 #define BUFFER_MAX_LEN 256
 
 // Initialize variables
 static pthread_t threadReceive;
-static char* s_msgRx_allocated;
+static char* s_msgRx_allocated = NULL;
+static pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct params {
     List* list;
@@ -28,38 +28,47 @@ void* receiveThread(void* threadArgs)
     int socketDescriptor = args->socket;
 
     // Initialize (other) variables
-    char msgRx[BUFFER_MAX_LEN];
-    int msgRx_len;
-    
     while (1) {
         // Retrieve message from socket
         struct sockaddr_in sinRemote;
+        memset(&sinRemote, 0, sizeof(sinRemote));
         unsigned int sin_len = sizeof(sinRemote);
-        memset(&msgRx, 0, BUFFER_MAX_LEN);
-        msgRx_len = recvfrom(socketDescriptor,
-            msgRx, BUFFER_MAX_LEN, 0,
-            (struct sockaddr *) &sinRemote, &sin_len);
-
+ 
         // Create message item and copy over message
         // Allocate memory size of message length + 1 for the null terminator
-        s_msgRx_allocated = (char*) malloc((1 + msgRx_len) * sizeof(char));
+        s_msgRx_allocated = (char*) malloc((BUFFER_MAX_LEN) * sizeof(char));
         if (s_msgRx_allocated == NULL) {
             perror("Error memory allocation for inbound message list item");
             exit(EXIT_FAILURE);
         }
-        strncpy(s_msgRx_allocated, msgRx, msgRx_len);
-        s_msgRx_allocated[msgRx_len] = '\0'; // Null terminate string
 
-        if (listAdd(listRx, s_msgRx_allocated) == -1) {
-            perror("Error adding item to inbound message list");
-            exit(EXIT_FAILURE);
+        if (recvfrom(socketDescriptor,
+            s_msgRx_allocated, BUFFER_MAX_LEN, 0,
+            (struct sockaddr *) &sinRemote, &sin_len) < 0){
+                perror("Error receiving message");
+                exit(EXIT_FAILURE);
         }
 
+        pthread_mutex_lock(&printMutex);
+        {
+            if (List_prepend(listRx, s_msgRx_allocated) == -1) {
+                perror("Error adding item to inbound message list");
+                exit(EXIT_FAILURE);
+            }
+        }
+        pthread_mutex_unlock(&printMutex);
+
         // Signal print thread
-        print_signal();
+        pthread_mutex_lock(&printMutex);
+        {
+            if (List_count(listRx) == 1) {
+                print_signal();
+            }
+        }
+        pthread_mutex_unlock(&printMutex);
 
         // Check for exit code ('!')
-        if ((msgRx_len == 1) && (msgRx[0] == '!')) {
+        if ((strcmp(s_msgRx_allocated, "!\n") == 0) || (strcmp(s_msgRx_allocated, "!\0")) == 0){
             printf("Exit code detected. S-talk session terminated.");
             break;
         }
@@ -79,7 +88,7 @@ void receive_init(List* listRx, int socketDescriptor)
 }
 
 // Shutdown receiveThread
-void receive_waitForShutdown()
+void receive_shutdown()
 {
     pthread_cancel(threadReceive);
     pthread_join(threadReceive, NULL);

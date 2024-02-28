@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include "list.h"
-#include "listOps.h"
+
 
 static pthread_t threadSend;
 static List* sendList;
@@ -37,29 +37,47 @@ void* sendThread(void* threadArgs)
         perror("Error PORT initialization");
         exit(EXIT_FAILURE);
     }
+
     while(1) {
         pthread_mutex_lock(&s_sendMutex);
-        while (List_count(sendList) == 0 && !sendShutdown) {
+        {
             pthread_cond_wait(&s_sendCond, &s_sendMutex);
         }
-        if (sendShutdown) {
-            pthread_mutex_unlock(&s_sendMutex);
-            break;
-        }
-        // retrieve message from list
-        char* message = List_trim(sendList);
         pthread_mutex_unlock(&s_sendMutex);
+
         // send message
         struct sockaddr_in sin;
         memset(&sin, 0, sizeof(sin));
-        sin.sin_family = AF_INET;
-        sin.sin_addr.s_addr = htonl(INADDR_ANY);
-        sin.sin_port = htons(PORT);
-        if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
-            perror("Error sending message");
-            exit(EXIT_FAILURE);
+
+        char* message = NULL;
+        pthread_mutex_lock(&s_sendMutex);
+        {
+            // retrieve message from list
+            message = List_trim(sendList);
         }
-        free(message);
+
+        struct hostent *remote = gethostbyname(args->machine);
+        if (remote == NULL) {
+            perror("Error getting host by name");
+            exit(EXIT_FAILURE);
+        } 
+
+        sin.sin_family = AF_INET;
+        memcpy(&sin.sin_addr, remote->h_addr_list[0], sizeof(remote->h_length));
+        sin.sin_port = htons(PORT);
+        
+        if (message != NULL) {
+            if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
+                perror("Error sending message");
+                exit(EXIT_FAILURE);
+            } 
+        }
+
+        if(strcmp("!\n", message) == 0) {
+            sendShutdown = 1;
+        }
+
+        printf("no error in sendThread\n");
     }
     return NULL;
 }
@@ -85,7 +103,7 @@ void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine
 }
 
 // Shutdown sendThread
-void send_waitForShutdown()
+void send_shutdown()
 {
     pthread_join(threadSend, NULL);
 }

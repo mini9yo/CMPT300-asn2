@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         closeSocket(socketDescriptor); // Close the socket
         exit(EXIT_FAILURE);
     }
-  
+
     List *messageListSend = List_create();
     if (messageListSend == NULL) {
         fprintf(stderr, "Error creating message list\n");
@@ -44,15 +44,16 @@ int main(int argc, char *argv[]) {
 
     // Initialize threads
     input_init(messageListSend);
+    send_init(messageListSend, socketDescriptor, remoteMachine, remotePort);
     receive_init(messageListReceive, socketDescriptor);
     print_init(messageListReceive);
-    send_init(messageListSend, socketDescriptor, remoteMachine, remotePort);
+
 
     // Wait for threads to finish
-    input_waitForShutdown();
-    receive_waitForShutdown();
-    print_waitForShutdown();
-    send_waitForShutdown();
+    input_shutdown();
+    send_shutdown();
+    receive_shutdown();
+    print_shutdown();
 
     // Clean up resources
     List_free(messageListSend, free);
