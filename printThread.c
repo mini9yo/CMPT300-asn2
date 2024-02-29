@@ -35,14 +35,17 @@ void* printThread(void* threadArg)
         } else { // Print message
             puts(msg);
             fflush(stdout); // flush to immediately display msg
-            free(msg);
-            msg = NULL;
+
+            // Check for exit code ('!')
+            if ((strlen(msg) == 1) && (*msg == '!')) {
+                free(msg);
+                msg = NULL;
+                break;
+            }
         }
 
-        // Check for exit code ('!')
-        if ((strlen(msg) == 1) && (*msg == '!')) {
-            break;
-        }
+        free(msg);
+        msg = NULL;
     }
 
     return NULL;

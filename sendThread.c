@@ -75,13 +75,15 @@ void* sendThread(void* threadArgs)
             if (sendto(socketDescriptor, message, strlen(message), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
                 perror("Error sending message");
                 exit(EXIT_FAILURE);
+                break;
             } 
         }
 
         if(strcmp("!\n", message) == 0) {
             sendShutdown = 1;
+            break;
         }
-
+    
     }
     return NULL;
 }

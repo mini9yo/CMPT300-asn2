@@ -53,6 +53,12 @@ void* receiveThread(void* threadArgs)
                 exit(EXIT_FAILURE);
         }
 
+        // Remove newline character from the message
+        size_t length = strlen(s_msgRx_allocated);
+        if (length > 0 && s_msgRx_allocated[length - 1] == '\n') {
+            s_msgRx_allocated[length - 1] = '\0'; 
+        }
+
         pthread_mutex_lock(&printMutex);
         {
             if (List_prepend(listRx, s_msgRx_allocated) == -1) {
@@ -72,8 +78,7 @@ void* receiveThread(void* threadArgs)
         pthread_mutex_unlock(&printMutex);
 
         // Check for exit code ('!')
-        if ((strcmp(s_msgRx_allocated, "!\n") == 0) || (strcmp(s_msgRx_allocated, "!\0")) == 0){
-            printf("Exit code detected. S-talk session terminated.");
+        if(strcmp("!\n", s_msgRx_allocated) == 0) {
             break;
         }
     }
