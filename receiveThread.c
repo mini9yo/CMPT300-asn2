@@ -13,7 +13,7 @@
 // Initialize variables
 static pthread_t threadReceive;
 static char* s_msgRx_allocated = NULL;
-static pthread_mutex_t printMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t receiveMutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct params {
     List* list;
@@ -60,23 +60,19 @@ void* receiveThread(void* threadArgs)
             s_msgRx_allocated[length -1] = '\0';
         }
 
-        pthread_mutex_lock(&printMutex);
+        pthread_mutex_lock(&receiveMutex);
         {
             if (List_prepend(listRx, strdup(s_msgRx_allocated)) == -1) {
                 perror("Error adding item to inbound message list");
                 exit(EXIT_FAILURE);
             }
         }
-        pthread_mutex_unlock(&printMutex);
+        pthread_mutex_unlock(&receiveMutex);
 
         // Signal print thread
-        pthread_mutex_lock(&printMutex);
-        {
-            if (List_count(listRx) == 1) {
-                print_signal();
-            }
+        if (List_count(listRx) == 1) {
+            print_signal();
         }
-        pthread_mutex_unlock(&printMutex);
 
         // Check for exit code ('!')
         if ((strcmp(s_msgRx_allocated, "!\n") == 0) || (strcmp(s_msgRx_allocated, "!\0")) == 0){

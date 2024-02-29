@@ -18,7 +18,6 @@ typedef struct params {
 static pthread_t threadSend;
 static pthread_mutex_t s_sendMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t s_sendCond = PTHREAD_COND_INITIALIZER;
-static int sendShutdown = 0;
 
 static threadParams* threadArgs;
 
@@ -79,7 +78,6 @@ void* sendThread(void* threadArgs)
         }
 
         if(strcmp("!\n", message) == 0) {
-            sendShutdown = 1;
             free(message);
             break;
         }

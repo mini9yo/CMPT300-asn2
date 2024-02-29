@@ -16,13 +16,14 @@ static pthread_t threadInput;
 static List* inputList;
 static pthread_mutex_t inputMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t inputCond = PTHREAD_COND_INITIALIZER;
+static char* inputBuffer = NULL;
 
 // Input thread implementation
 void* inputThread()
 {
     // TODO: Update
     while (1) {
-        char* inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
+        inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
         fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
 
         if (List_prepend(inputList, strdup(inputBuffer)) != 0) {
@@ -41,7 +42,6 @@ void* inputThread()
         }
         free(inputBuffer);
     }
-
     return NULL;
 }
 
