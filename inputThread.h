@@ -9,6 +9,7 @@ void* inputThread();
 // Initialize inputThread
 void input_init(List* list);
 
+// Cancel inputThread
 void cancelInput();
 
 // Shutdown inputThread

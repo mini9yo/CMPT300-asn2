@@ -20,7 +20,6 @@ static pthread_cond_t inputCond = PTHREAD_COND_INITIALIZER;
 // Input thread implementation
 void* inputThread()
 {
-    // TODO: Update
     while (1) {
         char* inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
         fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
@@ -57,6 +56,7 @@ void input_init(List* list)
     }
 }
 
+// Cancel inputThread
 void cancelInput()
 {
     pthread_cancel(threadInput);
