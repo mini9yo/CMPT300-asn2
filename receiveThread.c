@@ -113,10 +113,4 @@ void receive_shutdown()
 {
     free(threadArgs);
     pthread_join(threadReceive, NULL);
-
-    // Free allocated memory
-    // if (s_msgRx_allocated) {
-    //     free(s_msgRx_allocated);
-    //     s_msgRx_allocated = NULL;
-    // }
 }

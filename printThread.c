@@ -70,6 +70,7 @@ void print_init(List* listRx)
     }
 }
 
+// Cancel printThread
 void cancelPrint()
 {
     pthread_cancel(threadPrint);
