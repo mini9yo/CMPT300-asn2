@@ -9,8 +9,10 @@ void* sendThread(void* threadArgs);
 // Initialize sendThread
 void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine, int remotePort);
 
+// Send signaller
 void send_signal();
 
+// Cancel sendThread
 void cancelSend();
 
 // Shutdown sendThread

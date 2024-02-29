@@ -115,6 +115,7 @@ void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine
     }
 }
 
+// Cancel sendThread
 void cancelSend()
 {
     pthread_cancel(threadSend);

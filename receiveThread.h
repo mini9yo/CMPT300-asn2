@@ -9,6 +9,7 @@ void* receiveThread(void* threadArgs);
 // Initialize receiveThread
 void receive_init(List* listRx, int socketDescriptor);
 
+// Cancel receiveThread
 void cancelReceive();
 
 // Shutdown receiveThread

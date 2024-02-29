@@ -12,6 +12,7 @@ void print_signal();
 // Initialize printThread
 void print_init(List* listRx);
 
+// Cancel printThread
 void cancelPrint();
 
 // Shutdown printThread

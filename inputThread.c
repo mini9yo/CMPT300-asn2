@@ -21,7 +21,6 @@ static char* inputBuffer = NULL;
 // Input thread implementation
 void* inputThread()
 {
-    // TODO: Update
     while (1) {
         inputBuffer = (char*) malloc(BUFFER_MAX_LEN * sizeof(char));
         fgets(inputBuffer, BUFFER_MAX_LEN, stdin);
@@ -57,6 +56,7 @@ void input_init(List* list)
     }
 }
 
+// Cancel inputThread
 void cancelInput()
 {
     pthread_cancel(threadInput);

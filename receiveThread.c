@@ -102,6 +102,7 @@ void receive_init(List* listRx, int socketDescriptor)
     }
 }
 
+// Cancel receiveThread
 void cancelReceive()
 {
     pthread_cancel(threadReceive);
