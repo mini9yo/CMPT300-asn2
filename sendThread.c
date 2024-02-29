@@ -80,9 +80,10 @@ void* sendThread(void* threadArgs)
 
         if(strcmp("!\n", message) == 0) {
             sendShutdown = 1;
+            free(message);
             break;
         }
-
+        free(message);
     }
     return NULL;
 }
@@ -124,5 +125,6 @@ void cancelSend()
 // Shutdown sendThread
 void send_shutdown()
 {
+    free(threadArgs);
     pthread_join(threadSend, NULL);
 }

@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     if (messageListReceive == NULL) {
         fprintf(stderr, "Error creating message list\n");
         closeSocket(socketDescriptor); // Close the socket
+        List_free(messageListReceive, free);
         exit(EXIT_FAILURE);
     }
 

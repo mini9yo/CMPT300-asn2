@@ -16,7 +16,6 @@ static pthread_t threadInput;
 static List* inputList;
 static pthread_mutex_t inputMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t inputCond = PTHREAD_COND_INITIALIZER;
-static int inputShutdown = 0;
 
 // Input thread implementation
 void* inputThread()
@@ -37,10 +36,10 @@ void* inputThread()
 
         if (strcmp("!\n", inputBuffer) == 0) {
             free(inputBuffer);
-            inputShutdown = 1;
             receiveCancel();
             break;
         }
+        free(inputBuffer);
     }
 
     return NULL;

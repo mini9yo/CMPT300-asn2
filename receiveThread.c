@@ -62,7 +62,7 @@ void* receiveThread(void* threadArgs)
 
         pthread_mutex_lock(&printMutex);
         {
-            if (List_prepend(listRx, s_msgRx_allocated) == -1) {
+            if (List_prepend(listRx, strdup(s_msgRx_allocated)) == -1) {
                 perror("Error adding item to inbound message list");
                 exit(EXIT_FAILURE);
             }
@@ -81,8 +81,10 @@ void* receiveThread(void* threadArgs)
         // Check for exit code ('!')
         if ((strcmp(s_msgRx_allocated, "!\n") == 0) || (strcmp(s_msgRx_allocated, "!\0")) == 0){
             sendCancel();
+            free(s_msgRx_allocated);
             break;
         }
+        free(s_msgRx_allocated);
     }
     return NULL;
 }
@@ -112,6 +114,7 @@ void cancelReceive()
 // Shutdown receiveThread
 void receive_shutdown()
 {
+    free(threadArgs);
     pthread_join(threadReceive, NULL);
 
     // Free allocated memory
