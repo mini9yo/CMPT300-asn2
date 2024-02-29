@@ -19,15 +19,19 @@ typedef struct params {
     int socket;
 } threadParams;
 
+static threadParams* threadArgs;
+
 // Receive thread implementation
 void* receiveThread(void* threadArgs)
 {
     // Initialize argument variables
-    threadParams* args = (threadParams*)threadArgs;
-    List* listRx = args->list;
-    int socketDescriptor = args->socket;
+    threadParams* params = (threadParams*)threadArgs;
+    int socketDescriptor = params->socket;
+    List* listRx = params->list;
 
-    // Initialize (other) variables
+    // // test the parameters: PASSED
+    // printf("socketDescriptor: %d\n", socketDescriptor);
+
     while (1) {
         // Retrieve message from socket
         struct sockaddr_in sinRemote;
@@ -80,8 +84,15 @@ void* receiveThread(void* threadArgs)
 // Initialize receiveThread
 void receive_init(List* listRx, int socketDescriptor)
 {
-    threadParams threadArgs = {listRx, socketDescriptor};
-    if (pthread_create(&threadReceive, NULL, receiveThread, (void*) &threadArgs) != 0) {
+    threadArgs = (threadParams*) malloc(sizeof(threadParams));
+    if (threadArgs == NULL) {
+        perror("Error memory allocation for sendThread arguments");
+        exit(EXIT_FAILURE);
+    }
+    threadArgs->list = listRx;
+    threadArgs->socket = socketDescriptor;
+
+    if (pthread_create(&threadReceive, NULL, receiveThread, (void*) threadArgs) != 0) {
         perror("Error threadReceive creation");
         exit(EXIT_FAILURE);
     }

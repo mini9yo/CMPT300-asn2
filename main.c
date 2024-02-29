@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Error creating socket\n");
         exit(EXIT_FAILURE);
     }
-
+    
     // Initialize the list data structure for message passing
     List *messageListReceive = List_create();
     if (messageListReceive == NULL) {

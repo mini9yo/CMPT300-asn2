@@ -8,15 +8,6 @@
 #include <netdb.h>
 #include "list.h"
 
-
-static pthread_t threadSend;
-static List* sendList;
-static pthread_mutex_t s_sendMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t s_sendCond = PTHREAD_COND_INITIALIZER;
-static int sendShutdown = 0;
-static int socketDescriptor = -1;
-static int PORT = -1;
-
 typedef struct params {
     List* list;
     int socket;
@@ -24,17 +15,30 @@ typedef struct params {
     int port;
 } threadParams;
 
+static pthread_t threadSend;
+static pthread_mutex_t s_sendMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t s_sendCond = PTHREAD_COND_INITIALIZER;
+static int sendShutdown = 0;
+
+static threadParams* threadArgs;
+
 // Send thread implementation
 void* sendThread(void* threadArgs)
 {
     // Initialize argument variables
-    threadParams* args = (threadParams*)threadArgs;
-    sendList = args->list;
-    PORT = args->port;
+    threadParams* params = (threadParams*)threadArgs;
+    int socketDescriptor = params->socket;
+    int PORT = params->port;
+    char* machine = params->machine;
+    List* sendList = params->list;
 
-    // socket
-    if (PORT == -1) {
-        perror("Error PORT initialization");
+    // // test the parameters: PASSED
+    //printf("socketDescriptor: %d\n", socketDescriptor);
+    // printf("PORT: %d\n", PORT);
+    // printf("machine: %s\n", machine);
+    
+    if (socketDescriptor < 0 || PORT < 0 || machine == NULL) {
+        perror("Error: Invalid parameters in sendThread");
         exit(EXIT_FAILURE);
     }
 
@@ -55,8 +59,9 @@ void* sendThread(void* threadArgs)
             // retrieve message from list
             message = List_trim(sendList);
         }
+        pthread_mutex_unlock(&s_sendMutex);
 
-        struct hostent *remote = gethostbyname(args->machine);
+        struct hostent *remote = gethostbyname(machine);
         if (remote == NULL) {
             perror("Error getting host by name");
             exit(EXIT_FAILURE);
@@ -77,7 +82,6 @@ void* sendThread(void* threadArgs)
             sendShutdown = 1;
         }
 
-        printf("no error in sendThread\n");
     }
     return NULL;
 }
@@ -95,8 +99,17 @@ void send_signal()
 // Initialize sendThread
 void send_init(List* messageListSend, int socketDescriptor, char * remoteMachine, int remotePort)
 {
-    threadParams threadArgs = {messageListSend, socketDescriptor, remoteMachine, remotePort};
-    if (pthread_create(&threadSend, NULL, sendThread, (void*) &threadArgs) != 0) {
+    threadArgs = (threadParams*) malloc(sizeof(threadParams));
+    if (threadArgs == NULL) {
+        perror("Error memory allocation for sendThread arguments");
+        exit(EXIT_FAILURE);
+    }
+    threadArgs->list = messageListSend;
+    threadArgs->socket = socketDescriptor;
+    threadArgs->machine = remoteMachine;
+    threadArgs->port = remotePort;
+
+    if (pthread_create(&threadSend, NULL, sendThread, (void*) threadArgs) != 0) {
         perror("Error threadSend creation");
         exit(EXIT_FAILURE);
     }
